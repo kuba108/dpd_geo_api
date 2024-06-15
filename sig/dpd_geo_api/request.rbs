@@ -1,0 +1,10 @@
+module DpdGeoApi
+  class Request
+    attr_accessor method: Symbol
+    attr_accessor url: String
+    attr_accessor headers: Hash[String, String]
+    attr_accessor body: Hash[untyped, untyped]
+
+    def initialize: (Symbol method, String url, Hash[String, String] headers, Hash[untyped, untyped] body) -> void
+  end
+end

@@ -11,7 +11,7 @@ module DpdGeoApi
     end
 
     def me
-      # TODO: implement
+
     end
   end
 end

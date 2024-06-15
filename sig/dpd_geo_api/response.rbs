@@ -1,0 +1,9 @@
+module DpdGeoApi
+  class Response
+    def response_status: -> Integer
+    def response_message: -> String
+    def valid?: -> Boolean
+    def parse_errors: -> Hash
+    def parse_body: -> String
+  end
+end
