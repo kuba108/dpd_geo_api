@@ -2,18 +2,19 @@
 
 module DpdGeoApi
   class RequestMaker
-    def initialize(api_secret)
+    def initialize(api_secret, api_url)
       @api_secret = api_secret
+      @api_url = api_url
     end
 
     def get_request(url)
-      request = Request.new(:get, url, build_header)
+      request = Request.new(:get, "#{@api_url}/#{url}", build_header)
       connection = create_connection(url, request.headers)
       connection.get
     end
 
     def post_request(url, body = nil)
-      request = Request.new(:post, url, build_header, body.to_json)
+      request = Request.new(:post, "#{@api_url}/#{url}", build_header, body.to_json)
       connection = create_connection(url, request.headers)
       raw_response = connection.post do |req|
         req.body = request.body
@@ -38,12 +39,14 @@ module DpdGeoApi
       end
     end
 
-    def delete
+    def put_request
       raise "Method not implemented"
     end
 
-    def put
-      raise "Method not implemented"
+    def delete_request(url)
+      request = Request.new(:delete, "#{@api_url}/#{url}", build_header)
+      connection = create_connection(url, request.headers)
+      connection.delete
     end
 
     private
