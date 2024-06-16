@@ -25,6 +25,15 @@ module DpdGeoApi
       RequestMaker.new(@api_secret, @api_url).get_request("/parcels")
     end
 
+    # POST request /parcels/labels
+    # Same as the POST /parcels/{parcelIdent}/labels endpoint but for batched printing.
+    # A single ZPL/EPL script will contain instructions for printing multiple labels.
+    # The PDF will contain one or multiple pages with all labels.
+    def parcels_batch_labels(json)
+      raise "Invalid parcel labels JSON." if json.blank?
+      RequestMaker.new(@api_secret, @api_url).post_request("/parcels/labels", json)
+    end
+
     # POST request /parcels/{parcel_id}/labels
     # The parcel can have multiple labels, so an array is always returned.
     # The script/PDF always contains only single label.
@@ -33,6 +42,13 @@ module DpdGeoApi
       raise "Missing printProperties fot PDF print type." if json['printType'] == "PDF" && json['printProperties'].blank?
       raise "Invalid parcel labels JSON." if json.blank?
       RequestMaker.new(@api_secret, @api_url).post_request("/parcels/#{parcel_id}/labels", json)
+    end
+
+    # POST request /parcels/tracking
+    # Same as the GET /parcels/{parcelNo}/tracking endpoint but for batched tracking information.
+    def parcels_batch_tracking(json)
+      raise "Invalid parcel tracking JSON." if json.blank?
+      RequestMaker.new(@api_secret, @api_url).post_request("/parcels/tracking", json)
     end
 
     # GET request /parcels/{parcel_id}/tracking
