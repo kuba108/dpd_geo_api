@@ -1,0 +1,37 @@
+module DpdGeoApi
+  class Client
+    attr_reader api_secret: String
+    attr_reader api_url: String
+    attr_reader test_api: bool
+
+    def initialize: (String, api_url: String, test_api: bool) -> void
+
+    def me: () -> Faraday::Response
+
+    def parcels: () -> Faraday::Response
+
+    def parcels_batch_labels: (String) -> Hash[Symbol, untyped]
+
+    def parcels_labels: (String, String) -> Hash[Symbol, untyped]
+
+    def parcels_batch_tracking: (String) -> Hash[Symbol, untyped]
+
+    def parcels_tracking: (String) -> Faraday::Response
+
+    def create_pickup_order: (String) -> Hash[Symbol, untyped]
+
+    def delete_pickup_order: (String) -> Faraday::Response
+
+    def get_pickup_order: (String) -> Faraday::Response
+
+    def shipping_services: () -> Faraday::Response
+
+    def countries: () -> Faraday::Response
+
+    def customers: () -> Faraday::Response
+
+    def get_customer: (String) -> Faraday::Response
+
+    def shipments: (String) -> Hash[Symbol, untyped]
+  end
+end

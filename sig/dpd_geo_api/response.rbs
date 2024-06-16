@@ -1,9 +1,14 @@
 module DpdGeoApi
   class Response
-    def response_status: -> Integer
-    def response_message: -> String
-    def valid?: -> Boolean
-    def parse_errors: -> Hash
-    def parse_body: -> String
+    attr_reader http_status: Integer
+    attr_reader body: Hash[Symbol, untyped]
+    attr_reader errors: Array[untyped]
+
+    def initialize: (Integer, String?) -> void
+    def response_status: -> Integer?
+    def response_message: -> String?
+    def valid?: -> bool
+    def parse_errors: -> Array[untyped]
+    def parse_body: (String) -> Hash[Symbol, untyped]
   end
 end

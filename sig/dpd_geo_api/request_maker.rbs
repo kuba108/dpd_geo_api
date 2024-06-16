@@ -1,0 +1,16 @@
+module DpdGeoApi
+  class RequestMaker
+    @api_secret: String
+    @api_url: String
+
+    def initialize: (String, String) -> void
+
+    def get_request: (String) -> Faraday::Response
+
+    def post_request: (String, String) -> Hash[Symbol, untyped]
+
+    def put_request: () -> void
+
+    def delete_request: (String) -> Faraday::Response
+  end
+end
