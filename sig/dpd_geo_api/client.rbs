@@ -32,6 +32,6 @@ module DpdGeoApi
 
     def get_customer: (String) -> Faraday::Response
 
-    def shipments: (String) -> Hash[Symbol, untyped]
+    def create_shipment: (String) -> Hash[Symbol, untyped]
   end
 end
