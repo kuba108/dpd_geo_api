@@ -2,7 +2,7 @@
 
 module DpdGeoApi
   class Client
-    attr_reader :api_secret, :api_url, :test_api, :last_request_maker
+    attr_reader :api_secret, :api_url, :test_api, :request_maker
 
     def initialize(api_secret, api_url: "https://geoapi.dpd.cz/v1", test_api: false)
       @api_secret = api_secret
@@ -15,7 +15,8 @@ module DpdGeoApi
     # Use this method to get information about your customers and customer addresses.
     # User account which is used to find the data is determined by an API key provided in a request header.
     def me
-      @last_request_maker = DpdGeoApi::RequestMaker.new(@api_secret, @api_url).get_request("/me")
+      @request_maker = DpdGeoApi::RequestMaker.new(@api_secret, @api_url)
+      @request_maker.get_request("/me")
     end
 
     # GET request /parcels
@@ -23,7 +24,8 @@ module DpdGeoApi
     # Returns everything that was created in a selected time-frame by the current user account.
     # The goal is to provide an overview of every parcel via a single endpoint.
     def parcels
-      @last_request_maker = RequestMaker.new(@api_secret, @api_url).get_request("/parcels")
+      @request_maker = RequestMaker.new(@api_secret, @api_url)
+      @request_maker.get_request("/parcels")
     end
 
     # POST request /parcels/labels
@@ -32,7 +34,8 @@ module DpdGeoApi
     # The PDF will contain one or multiple pages with all labels.
     def parcels_batch_labels(json)
       raise "Invalid parcel labels JSON." if json.blank?
-      @last_request_maker = RequestMaker.new(@api_secret, @api_url).post_request("/parcels/labels", json)
+      @request_maker = RequestMaker.new(@api_secret, @api_url)
+      @request_maker.post_request("/parcels/labels", json)
     end
 
     # POST request /parcels/{parcel_id}/labels
@@ -42,14 +45,16 @@ module DpdGeoApi
       raise "Invalid print type. Must be either 'PDF', 'ZPL' or 'EPL'" unless %w(PDF ZPL EPL).include?(json['printType'])
       raise "Missing printProperties fot PDF print type." if json['printType'] == "PDF" && json['printProperties'].blank?
       raise "Invalid parcel labels JSON." if json.blank?
-      @last_request_maker = RequestMaker.new(@api_secret, @api_url).post_request("/parcels/#{parcel_id}/labels", json)
+      @request_maker = RequestMaker.new(@api_secret, @api_url)
+      @request_maker.post_request("/parcels/#{parcel_id}/labels", json)
     end
 
     # POST request /parcels/tracking
     # Same as the GET /parcels/{parcelNo}/tracking endpoint but for batched tracking information.
     def parcels_batch_tracking(json)
       raise "Invalid parcel tracking JSON." if json.blank?
-      @last_request_maker = RequestMaker.new(@api_secret, @api_url).post_request("/parcels/tracking", json)
+      @request_maker = RequestMaker.new(@api_secret, @api_url)
+      @request_maker.post_request("/parcels/tracking", json)
     end
 
     # GET request /parcels/{parcel_id}/tracking
@@ -59,7 +64,8 @@ module DpdGeoApi
     # You can do this with the parcel number too using the 'no-' prefix (e.b. no-12345678901234)
     def parcels_tracking(parcel_id)
       raise "Invalid parcel ID." if parcel_id.blank?
-      @last_request_maker = RequestMaker.new(@api_secret, @api_url).get_request("/parcels/#{parcel_id}/tracking")
+      @request_maker = RequestMaker.new(@api_secret, @api_url)
+      @request_maker.get_request("/parcels/#{parcel_id}/tracking")
     end
 
     # POST request /pickup-orders
@@ -68,30 +74,35 @@ module DpdGeoApi
     # The courier will then proceed to forward the parcels into further transit and make sure they will eventually reach their shipping destination.
     def create_pickup_order(json)
       raise "Invalid pickup order JSON." if json.blank?
-      @last_request_maker = RequestMaker.new(@api_secret, @api_url).post_request("/pickup-orders", json)
+      @request_maker = RequestMaker.new(@api_secret, @api_url)
+      @request_maker.post_request("/pickup-orders", json)
     end
 
     # DELETE request /pickup-orders
     def delete_pickup_order(pickup_order_id)
       raise "Invalid pickup order ID." if pickup_order_id.blank?
-      @last_request_maker = RequestMaker.new(@api_secret, @api_url).delete_request("/pickup-orders/#{pickup_order_id}")
+      @request_maker = RequestMaker.new(@api_secret, @api_url)
+      @request_maker.delete_request("/pickup-orders/#{pickup_order_id}")
     end
 
     def get_pickup_order(pickup_order_id)
       raise "Invalid pickup order ID." if pickup_order_id.blank?
-      @last_request_maker = RequestMaker.new(@api_secret, @api_url).get_request("/pickup-orders/#{pickup_order_id}")
+      @request_maker = RequestMaker.new(@api_secret, @api_url)
+      @request_maker.get_request("/pickup-orders/#{pickup_order_id}")
     end
 
     # GET request /shipping-services
     # List of available shipping services.
     def shipping_services
-      @last_request_maker = RequestMaker.new(@api_secret, @api_url).get_request("/shipping-services")
+      @request_maker = RequestMaker.new(@api_secret, @api_url)
+      @request_maker.get_request("/shipping-services")
     end
 
     # GET request /countries
     # List of available countries.
     def countries
-      @last_request_maker = RequestMaker.new(@api_secret, @api_url).get_request("/countries")
+      @request_maker = RequestMaker.new(@api_secret, @api_url)
+      @request_maker.get_request("/countries")
     end
 
     # GET request /customers
@@ -99,7 +110,8 @@ module DpdGeoApi
     # Each user account has multiple customers associated with it.
     # Each customer has its own DSW and his own customer addresses.
     def customers
-      @last_request_maker = RequestMaker.new(@api_secret, @api_url).get_request("/customers")
+      @request_maker = RequestMaker.new(@api_secret, @api_url)
+      @request_maker.get_request("/customers")
     end
 
     # GET request /customers/{customer_dsw}
@@ -108,7 +120,8 @@ module DpdGeoApi
     # If the customer is not associated with your account, an error will be returned.
     def get_customer(customer_dsw)
       raise "Invalid customer DSW." if customer_dsw.blank?
-      @last_request_maker = RequestMaker.new(@api_secret, @api_url).get_request("/customers/#{customer_dsw}")
+      @request_maker = RequestMaker.new(@api_secret, @api_url)
+      @request_maker.get_request("/customers/#{customer_dsw}")
     end
 
     # POST request /shipments
@@ -125,7 +138,8 @@ module DpdGeoApi
     # You can then throw away the printed labels and use new ones.
     def create_shipment(json)
       raise "Invalid shipment JSON." if json.blank?
-      @last_request_maker = RequestMaker.new(@api_secret, @api_url).post_request("/shipments", json)
+      @request_maker = RequestMaker.new(@api_secret, @api_url)
+      @request_maker.post_request("/shipments", json)
     end
   end
 end

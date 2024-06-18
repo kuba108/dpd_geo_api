@@ -4,7 +4,7 @@ module DpdGeoApi
   class Request
     attr_accessor :method, :url, :headers, :body
 
-    def initialize(method, url, headers, body: nil)
+    def initialize(method, url, headers, body )
       @method = method
       @url = url
       @headers = headers

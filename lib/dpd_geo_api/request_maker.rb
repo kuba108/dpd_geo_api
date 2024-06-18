@@ -15,7 +15,7 @@ module DpdGeoApi
     end
 
     def get_request(url)
-      @request = Request.new(:get, "#{@api_url}/#{url}", build_header)
+      @request = Request.new(:get, "#{@api_url}/#{url}", build_header, nil)
       @connection = create_connection(@request)
       @connection.get
     end
@@ -31,17 +31,18 @@ module DpdGeoApi
         {
           result: "success",
           response: @response,
-          response_status: @response.response_status,
-          msg: "All packages was accepted by Balikobot."
+          msg: "All packages was accepted by DPD."
         }
       else
         @response.parse_errors
         {
           result: "error",
           response: @response,
-          response_status: @response.response_status,
+          code: @response.response_code,
+          message: @response.response_message,
+          description: @response.response_description,
           errors: @response.errors,
-          msg: "Response from Balikobot was not successful."
+          msg: "Response from DPD was not successful."
         }
       end
     end
@@ -51,7 +52,7 @@ module DpdGeoApi
     end
 
     def delete_request(url)
-      @request = Request.new(:delete, "#{@api_url}/#{url}", build_header)
+      @request = Request.new(:delete, "#{@api_url}/#{url}", build_header, nil)
       @connection = create_connection(@request)
       @connection.delete
     end

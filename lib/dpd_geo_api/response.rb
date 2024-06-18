@@ -9,25 +9,25 @@ module DpdGeoApi
       @http_status = http_status
       # Tries to parse body, which should be JSON
       # when http status is 2xx or 4xx kind and not 404 - page not found.
-      return unless (200..299).include?(@http_status) || ((400..499).include?(@http_status) && @http_status != 404)
+      return unless (200..299).include?(@http_status) || ((400..499).include?(@http_status))
 
       @body = parse_body(body)
     end
 
-    def response_status
-      @body["status"].to_i if @body.present?
+    def response_code
+      @body["code"] if @body.present?
     end
 
     def response_message
-      @body["messages"] if @body.present?
+      @body["message"] if @body.present?
+    end
+
+    def response_description
+      @body["description"] if @body.present?
     end
 
     def valid?
-      (200..299).include?(response_status)
-    end
-
-    def parse_errors
-      @errors = ResponseValidator.new.validate_response(self)
+      (200..299).include?(@http_status)
     end
 
     private
@@ -35,7 +35,7 @@ module DpdGeoApi
     def parse_body(body)
       JSON.parse(body)
     rescue StandardError
-      "JSON parse error!"
+      { error: "JSON parse error!" }
     end
   end
 end

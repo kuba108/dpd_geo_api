@@ -1,5 +1,0 @@
-module DpdGeoApi
-  class ResponseValidator
-    def validate_response: (response: { response_status: Integer, body: Hash[String, untyped] }) -> Array[untyped]
-  end
-end

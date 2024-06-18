@@ -4,11 +4,14 @@ module DpdGeoApi
     attr_reader body: Hash[Symbol, untyped]
     attr_reader errors: Array[untyped]
 
-    def initialize: (Integer, String?) -> void
-    def response_status: -> Integer?
+    def initialize: (Integer, ?String) -> void
+    def response_code: -> Integer?
     def response_message: -> String?
+    def response_description: -> String?
     def valid?: -> bool
-    def parse_errors: -> Array[untyped]
+
+    private
+
     def parse_body: (String) -> Hash[Symbol, untyped]
   end
 end
