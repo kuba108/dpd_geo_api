@@ -1,16 +1,28 @@
 module DpdGeoApi
   class RequestMaker
-    @api_secret: String
-    @api_url: String
+    attr_reader api_secret: String
+    attr_reader api_url: String
+    attr_reader connection: Faraday::Connection
+    attr_reader request: Request
+    attr_reader raw_response: Faraday::Response
+    attr_reader response: Response
 
     def initialize: (String, String) -> void
 
     def get_request: (String) -> Faraday::Response
 
-    def post_request: (String, String) -> Hash[Symbol, untyped]
+    def post_request: (String, ?String) -> Hash[Symbol, untyped]
 
     def put_request: () -> void
 
     def delete_request: (String) -> Faraday::Response
+
+    private
+
+    def build_header: () -> Hash[Symbol, String]
+
+    def create_connection: (Request) -> Faraday::Connection
+
+    def build_response: (Faraday::Response, ?bool) -> Response
   end
 end

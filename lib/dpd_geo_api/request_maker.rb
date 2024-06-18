@@ -16,13 +16,13 @@ module DpdGeoApi
 
     def get_request(url)
       @request = Request.new(:get, "#{@api_url}/#{url}", build_header)
-      @connection = create_connection(url, @request.headers)
+      @connection = create_connection(@request)
       @connection.get
     end
 
     def post_request(url, body = nil)
       @request = Request.new(:post, "#{@api_url}/#{url}", build_header, body.to_json)
-      @connection = create_connection(url, @request.headers)
+      @connection = create_connection(@request)
       @raw_response = @connection.post do |req|
         req.body = @request.body
       end
@@ -52,7 +52,7 @@ module DpdGeoApi
 
     def delete_request(url)
       @request = Request.new(:delete, "#{@api_url}/#{url}", build_header)
-      @connection = create_connection(url, @request.headers)
+      @connection = create_connection(@request)
       @connection.delete
     end
 
@@ -67,8 +67,8 @@ module DpdGeoApi
     end
 
     # Creates connection by Faraday
-    def create_connection(url, headers)
-      Faraday.new(url:, headers:) do |conn|
+    def create_connection(request)
+      Faraday.new(url: request.url, headers: request.headers) do |conn|
         conn.request  :json
         conn.response :logger                  # log requests to STDOUT
         conn.adapter  Faraday.default_adapter  # make requests with Net::HTTP

@@ -4,7 +4,7 @@ module DpdGeoApi
   class Client
     attr_reader :api_secret, :api_url, :test_api, :last_request_maker
 
-    def initialize(api_secret, api_url: "https://geoapi.dpd.cz/v1/", test_api: false)
+    def initialize(api_secret, api_url: "https://geoapi.dpd.cz/v1", test_api: false)
       @api_secret = api_secret
       @api_url = api_url.last == "/" ? api_url[0..-2] : api_url
       @test_api = test_api
@@ -15,7 +15,7 @@ module DpdGeoApi
     # Use this method to get information about your customers and customer addresses.
     # User account which is used to find the data is determined by an API key provided in a request header.
     def me
-      @last_request_maker = RequestMaker.new(@api_secret, @api_url).get_request("/me")
+      @last_request_maker = DpdGeoApi::RequestMaker.new(@api_secret, @api_url).get_request("/me")
     end
 
     # GET request /parcels
