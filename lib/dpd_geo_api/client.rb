@@ -42,8 +42,6 @@ module DpdGeoApi
     # The parcel can have multiple labels, so an array is always returned.
     # The script/PDF always contains only single label.
     def parcels_labels(parcel_id, json)
-      raise "Invalid print type. Must be either 'PDF', 'ZPL' or 'EPL'" unless %w(PDF ZPL EPL).include?(json['printType'])
-      raise "Missing printProperties fot PDF print type." if json['printType'] == "PDF" && json['printProperties'].blank?
       raise "Invalid parcel labels JSON." if json.blank?
       @request_maker = RequestMaker.new(@api_secret, @api_url)
       @request_maker.post_request("/parcels/#{parcel_id}/labels", json)

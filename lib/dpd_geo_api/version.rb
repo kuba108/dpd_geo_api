@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module DpdGeoApi
-  VERSION = "0.0.14"
+  VERSION = "0.0.18"
 end

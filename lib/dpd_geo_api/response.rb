@@ -35,7 +35,7 @@ module DpdGeoApi
     def parse_body(body)
       JSON.parse(body)
     rescue StandardError
-      { error: "JSON parse error!" }
+      { data: body }
     end
   end
 end

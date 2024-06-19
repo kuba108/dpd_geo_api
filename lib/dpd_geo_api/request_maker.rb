@@ -31,13 +31,14 @@ module DpdGeoApi
         {
           result: "success",
           response: @response,
+          body: @response.body,
           msg: "All packages was accepted by DPD."
         }
       else
-        @response.parse_errors
         {
           result: "error",
           response: @response,
+          body: @response.body,
           code: @response.response_code,
           message: @response.response_message,
           description: @response.response_description,
