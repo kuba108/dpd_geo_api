@@ -3,9 +3,9 @@ module DpdGeoApi
     attr_reader api_secret: String
     attr_reader api_url: String
     attr_reader connection: Faraday::Connection
-    attr_reader request: Request
+    attr_reader request: Request | nil
     attr_reader raw_response: Faraday::Response
-    attr_reader response: Response
+    attr_reader response: Response | nil
 
     def initialize: (String, String) -> void
 
@@ -24,5 +24,7 @@ module DpdGeoApi
     def create_connection: (Request) -> Faraday::Connection
 
     def build_response: (Faraday::Response, ?bool) -> Response
+
+    def build_response_json: () -> Hash[Symbol, untyped]
   end
 end

@@ -8,16 +8,14 @@ module DpdGeoApi
     def initialize(api_secret, api_url)
       @api_secret = api_secret
       @api_url = api_url
-      @connection = nil
-      @request = nil
-      @raw_response = nil
-      @response = nil
     end
 
     def get_request(url)
       @request = Request.new(:get, "#{@api_url}/#{url}", build_header, nil)
       @connection = create_connection(@request)
-      @connection.get
+      @raw_response = @connection.get
+      @response = build_response(@raw_response)
+      build_response_json
     end
 
     def post_request(url, body = nil)
@@ -27,25 +25,7 @@ module DpdGeoApi
         req.body = @request.body
       end
       @response = build_response(@raw_response)
-      if @response.valid?
-        {
-          result: "success",
-          response: @response,
-          body: @response.body,
-          msg: "All packages was accepted by DPD."
-        }
-      else
-        {
-          result: "error",
-          response: @response,
-          body: @response.body,
-          code: @response.response_code,
-          message: @response.response_message,
-          description: @response.response_description,
-          errors: @response.errors,
-          msg: "Response from DPD was not successful."
-        }
-      end
+      build_response_json
     end
 
     def put_request
@@ -55,7 +35,9 @@ module DpdGeoApi
     def delete_request(url)
       @request = Request.new(:delete, "#{@api_url}/#{url}", build_header, nil)
       @connection = create_connection(@request)
-      @connection.delete
+      @raw_response = @connection.delete
+      @response = build_response(@raw_response)
+      build_response_json
     end
 
     private
@@ -83,6 +65,31 @@ module DpdGeoApi
         Response.new(raw_response.status)
       else
         Response.new(raw_response.status, raw_response.body)
+      end
+    end
+
+    # Builds response JSON.
+    def build_response_json
+      if @response.valid?
+        {
+          result: "success",
+          response: @response,
+          body: @response.body,
+          code: @response.response_code,
+          message: @response.response_message,
+          msg: "Request is accepted by DPD."
+        }
+      else
+        {
+          result: "error",
+          response: @response,
+          body: @response.body,
+          code: @response.response_code,
+          message: @response.response_message,
+          description: @response.response_description,
+          errors: @response.errors,
+          msg: "Response from DPD was not successful."
+        }
       end
     end
   end

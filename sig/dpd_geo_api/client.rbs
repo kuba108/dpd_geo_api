@@ -1,8 +1,10 @@
 module DpdGeoApi
   class Client
+
     attr_reader api_secret: String
     attr_reader api_url: String
     attr_reader test_api: bool
+    attr_reader request_maker: RequestMaker
 
     def initialize: (String, api_url: String, test_api: bool) -> void
 
