@@ -2,12 +2,11 @@
 
 module DpdGeoApi
   class Client
-    attr_reader :api_secret, :api_url, :test_api, :request_maker
+    attr_reader :api_secret, :api_url, :request_maker
 
-    def initialize(api_secret, api_url = "https://geoapi.dpd.cz/v1", test_api = false)
+    def initialize(api_secret, api_url = "https://geoapi.dpd.cz/v1")
       @api_secret = api_secret
       @api_url = api_url[-1] == "/" ? api_url[0..-2] : api_url
-      @test_api = test_api
     end
 
     # GET request /me
