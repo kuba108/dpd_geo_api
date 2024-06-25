@@ -29,78 +29,138 @@ client = DpdGeoApi::Client.new('your_api_secret')
 Or you can setup also URL and test mode:
 
 ```ruby
-client = DpdGeoApi::Client.new('your_api_secret', 'https://geoapi.dpd.cz/v2', false)
+client = DpdGeoApi::Client.new('your_api_secret', 'https://geoapi.dpd.cz/v2')
 ```
 
-Then you can use the client to make requests to the API:
+Then you can use the client to make first request to the API:
 
 ```ruby
-response = client.get('parcels', { parcel_number: '00000000000001' })
+response = client.me
 ```
 
-The response will be a `DpdGeoApi::Response` object, which has the following methods:
-- `status`: The HTTP status code of the response
-- `body`: The parsed JSON body of the response
-- `headers`: The headers of the response
-- `success?`: A boolean indicating whether the request was successful (status code 200)
-- `error?`: A boolean indicating whether the request was unsuccessful (status code other than 200)
-- `error_message`: The error message if the request was unsuccessful
-- `error_code`: The error code if the request was unsuccessful
-- `error_details`: The error details if the request was unsuccessful
-- `error_response`: The full error response if the request was unsuccessful
-- `error_response_body`: The parsed JSON body of the error response
-- `error_response_headers`: The headers of the error response
-- `error_response_status`: The HTTP status code of the error response
-- `error_response_success?`: A boolean indicating whether the error response was successful (status code 200)
-- `error_response_error?`: A boolean indicating whether the error response was unsuccessful (status code other than 200)
-- `error_response_error_message`: The error message of the error response
-- `error_response_error_code`: The error code of the error response
-- `error_response_error_details`: The error details of the error response
+It should return the information about the authenticated user.
+Now you can make more advanced requests to the API:
+
+```ruby
+response = client.create_shipment(json)
+```
+
+JSON should reflect actual DPD documentation for the API.
+However in Ruby we are using hash so my hash looks like this:
+
+```ruby
+def data
+    data = {
+      customer: {
+        dsw: @client.dpd_customer_dsw
+      },
+      shipmentType: 'Standard',
+      sender: {
+        it4emId: @client.dpd_customer_address_id.to_i
+      },
+      receiver: {
+        info: {
+          name1: @package.company.present? ? @package.company : @package.name,
+          contact: {
+            person: @package.company.present? ? @package.company : @package.name,
+            phone: get_phone,
+            email: @package.valid_email? ? @package.email : ''
+          },
+        },
+        address: {
+          street: @package.street,
+          postal_code: @package.zip,
+          city: @package.city,
+          country: {
+            iso_alpha_2: @package.country_code
+          }
+        }
+      },
+      references: {
+        ref1: @package.uniq_order_id
+      },
+      parcels: [],
+      services: {
+        notification: !@order.company_order? && @package.valid_phone?,
+      }
+    }
+
+    # Pushes packages (parcels) to shipment
+    @packages.each do |package|
+      data[:parcels] << {
+        references: {
+          ref_1: package.uniq_order_id
+        },
+        weightGrams: package.weight == 0.0 ? 0 : package.weight * 1000
+      }
+    end
+
+    if @package.cod_price > 0.0
+      data[:services][:cash_on_delivery] = {
+        amountCents: @package.cod_price.to_i * 100,
+        payment: 'CashOrCard',
+        variable_symbol: @package.order.number,
+        currency: @package.currency
+      }
+    end
+
+    data
+  end
+```
+
+You method could be totally different, but the idea is to create a hash that will be converted to JSON and sent to the API.
+Ruby uses snake_case and JSON camelCase so you need to convert it before sending it to the API.
+This is my method to convert hash keys from snake_case to camelCase:
+
+```ruby
+class HashHelper
+  def self.snake_to_camel(hash)
+    hash.deep_transform_keys { |key| key.to_s.camelize(:lower) }.to_json
+  end
+end
+```
+
+Final step is to convert to JSON. I had problem with fact, that DPD accepts JSON as array.
+So my solution is to put brackets around the JSON string:
+
+```ruby
+json = HashHelper.snake_to_camel(data)
+result = client.create_shipment(JSON.parse("[#{json}]"))
+```
+
+Result is Hash with response from the API. In success case it should contain `status: 200`:
+
+```ruby
+{
+  result: "success",
+  response: DpdGeoApi::Response,
+  body: DPD response,
+  code: 200,
+  message: "message",
+  msg: "Request is accepted by DPD."
+}
+```
+
+In case of error it should contain non 200 status code and error message:
+
+```ruby
+{
+  result: "error",
+  response: DpdGeoApi::Response,
+  body: DPD response,
+  code: 400,
+  message: "message",
+  description: "description",
+  errors: [],
+  msg: "Response from DPD was not successful."
+}
+```
 
 I will provide more examples of API methods in the next section later.
 
 ### Client API methods
 
-```ruby
-# Get information about the authenticated user
-response = client.me
-
-# Get a list of parcels
-parcels = client.parcels
-
-# Get batch labels for a parcel
-batch_labels = client.parcels_batch_labels('parcel_id')
-
-# Get labels for a parcel
-labels = client.parcels_labels('parcel_id', 'label_id')
-
-# Track a parcel
-tracking_info = client.parcels_tracking('parcel_id')
-
-# Create a pickup order
-pickup_order = client.create_pickup_order('order_details')
-
-# Delete a pickup order
-client.delete_pickup_order('order_id')
-
-# Get a pickup order
-pickup_order = client.get_pickup_order('order_id')
-
-# Get a list of shipping services
-shipping_services = client.shipping_services
-
-# Get a list of countries
-countries = client.countries
-
-# Get a list of customers
-customers = client.customers
-
-# Get a customer
-customer = client.get_customer('customer_id')
-
-# Get shipments for a customer
-shipments = client.shipments('customer_id')
-```
+Fill in later.
 
 ## Development
 
