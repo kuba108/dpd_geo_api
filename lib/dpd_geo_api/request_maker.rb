@@ -75,7 +75,6 @@ module DpdGeoApi
           result: "success",
           response: @response,
           body: @response.body,
-          message: @response.response_message,
           msg: "Request is accepted by DPD."
         }
       else
